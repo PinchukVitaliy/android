@@ -1,0 +1,312 @@
+<java file>
+package com.example.test;
+
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+    Integer num = 0;
+    MediaPlayer mPlayer;
+    Button startButton, pauseButton, stopButton;
+    ImageButton imageButton;
+    String[] locals = {"ua", "en", "ru"};
+    Spinner spinner;
+    Integer n = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mPlayer = MediaPlayer.create(this, R.raw.music);
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                stopPlay();
+            }
+        });
+        startButton = (Button) findViewById(R.id.start);
+        pauseButton = (Button) findViewById(R.id.pause);
+        stopButton = (Button) findViewById(R.id.stop);
+
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
+
+        imageButton = ((ImageButton) findViewById(R.id.imageButton));
+        spinner = (Spinner) findViewById(R.id.local);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locals);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+        if (getIntent().getStringExtra("num2") != null) {
+            String str = getIntent().getStringExtra("num2");
+            getSupportActionBar().setTitle(str);
+            n = Integer.parseInt(str);
+        }
+        TimeHandler.sendEmptyMessageDelayed(0, 10L);
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler TimeHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            //Обновляем часы
+            TimeHandler.sendEmptyMessageDelayed(0, 1000L);//1 sec update
+            time();
+        }
+    };
+
+    public void localization(View view) {
+        Locale locale = new Locale(spinner.getSelectedItem().toString());
+        Locale.setDefault(locale);
+        String text = Locale.getDefault().getLanguage();
+        //((TextView) findViewById(R.id.textView)).setText(text);
+
+        stop(findViewById(R.id.stop));
+        if (text.equals("ru")) {
+            imageButton.setImageResource(R.mipmap.ic_launcher_foreground);
+            mPlayer = MediaPlayer.create(this, R.raw.rossii);
+            play(findViewById(R.id.start));
+        } else if (text.equals("ua")) {
+            imageButton.setImageResource(R.mipmap.ua_foreground);
+            mPlayer = MediaPlayer.create(this, R.raw.ukrani);
+            play(findViewById(R.id.start));
+        } else if (text.equals("en")) {
+            imageButton.setImageResource(R.mipmap.br_foreground);
+            mPlayer = MediaPlayer.create(this, R.raw.anglii);
+            play(findViewById(R.id.start));
+        }
+
+    }
+
+    public void time() {
+        Calendar c = Calendar.getInstance();
+        TextView textViewInfo = ((TextView) findViewById(R.id.textViewInfo));
+        int seconds = c.get(Calendar.SECOND);
+        int minutes = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+
+        if (hour < 6 && minutes == 0) {
+            textViewInfo.setText("До пары: " + (6 - hour) + " час. - " + (minutes) + " мин.");
+        }
+        if (hour < 6 && minutes != 0) {
+            textViewInfo.setText("До пары: " + (5 - hour) + " час. - " + (60 - minutes) + " мин.");
+        }
+        if (hour == 6 && minutes == 0) {
+            textViewInfo.setText("18:00 Пара Началась!!!!");
+            textViewInfo.setTextColor(Color.GREEN);
+            play(findViewById(R.id.start));
+        }
+        if (hour > 6 && minutes > 50) {
+            textViewInfo.setText("Пара Закончилась !!!!");
+            textViewInfo.setTextColor(Color.RED);
+            play(findViewById(R.id.start));
+        }
+        //textViewInfo.setText(hour+":"+minutes+": "+seconds);
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+        ((TextView) findViewById(R.id.textView)).setText(date);
+    }
+
+
+    private void stopPlay() {
+        mPlayer.stop();
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        try {
+            mPlayer.prepare();
+            mPlayer.seekTo(0);
+            startButton.setEnabled(true);
+        } catch (Throwable t) {
+            Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void play(View view) {
+
+        mPlayer.start();
+        startButton.setEnabled(false);
+        pauseButton.setEnabled(true);
+        stopButton.setEnabled(true);
+    }
+
+    public void pause(View view) {
+
+        mPlayer.pause();
+        startButton.setEnabled(true);
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(true);
+    }
+
+    public void stop(View view) {
+        stopPlay();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mPlayer.isPlaying()) {
+            stopPlay();
+        }
+    }
+
+    public void click(View view) {
+        Button b = (Button) view;
+        if (num == 20) {
+            b.setText("Error!!!!");
+            b.setTextColor(Color.RED);
+            b.setBackgroundColor(Color.BLUE);
+            return;
+        } else {
+            b.setWidth(b.getWidth() + 15);
+            b.setText((++num).toString());
+        }
+    }
+
+    public void action(View view) {
+        Intent intent = new Intent(this, SecondActivity.class);
+        intent.putExtra("num", (n++) + "");
+        startActivity(intent);
+    }
+}
+
+
+</java file>
+
+
+
+
+
+
+
+
+
+
+
+
+<xml>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="16dp">
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Play"
+            android:onClick="play"/>
+        <Button
+            android:id="@+id/pause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Pause"
+            android:onClick="pause"/>
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stop"
+            android:onClick="stop"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click me"
+        android:onClick="click"
+        android:layout_marginTop="15dp"/>
+
+
+    <TextView
+        android:id="@+id/textViewInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Info"
+        android:layout_marginTop="15dp"/>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:layout_marginTop="15dp"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="364dp"
+        android:layout_height="219dp">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="208dp"
+            android:layout_height="138dp"
+            android:onClick="localization"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.802"
+            app:srcCompat="@drawable/ic_launcher_background"
+            tools:ignore="VectorDrawableCompat" />
+
+        <Spinner
+            android:id="@+id/local"
+            android:layout_width="238dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="1dp"
+            tools:ignore="MissingConstraints" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <Button
+        android:id="@+id/action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:onClick="action"
+        android:text="action"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</LinearLayout>
+</xml>
