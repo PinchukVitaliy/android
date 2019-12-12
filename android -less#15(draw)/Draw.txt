@@ -1,0 +1,185 @@
+///////////////////MainActivity java (Stop) /////////////////
+
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.os.Bundle;
+import android.view.Display;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+public class MainActivity extends Activity implements View.OnClickListener{
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        DrawView btInCanvas = new DrawView(this);
+        btInCanvas.setOnClickListener(this);
+        setContentView(btInCanvas);
+    }
+
+    @Override
+    public void onClick(View view) {
+       Intent intent = new Intent(this,SecondActivity.class);
+       startActivity(intent);
+    }
+
+    class DrawView extends View {
+
+        Paint p;
+        //Rect rect;
+
+        public DrawView(Context context) {
+            super(context);
+            p = new Paint();
+            //rect = new Rect();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            // заливка канвы цветом
+            canvas.drawARGB(80, 102, 204, 255);
+
+            // настройка кисти
+            p.setColor(Color.BLACK);
+            canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, canvas.getWidth()/4, p);
+
+            p.setColor(Color.WHITE);
+            canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, (canvas.getWidth()/4)-3, p);
+
+            p.setColor(Color.RED);
+            canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, (canvas.getWidth()/4)-10, p);
+
+            p.setColor(Color.WHITE);
+            canvas.drawRect((canvas.getWidth()/2)-130, (canvas.getHeight()/2)-30,
+                    (canvas.getWidth()/2)+130, (canvas.getHeight()/2)+30, p);
+
+            // настройка объекта Rect
+            // лева€ верхн€€ точка (250,300), нижн€€ права€ (350,500)
+            //rect.set(250, 300, 350, 500);
+            // рисуем пр€моугольник из объекта rect
+            //canvas.drawRect(rect, p);
+        }
+    }
+
+}
+
+/////////////////////////MainActivity java (boat) /////////////////////
+
+
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Display;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
+public class SecondActivity extends AppCompatActivity {
+
+    public static int width;
+    public static int height;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
+
+        setContentView(new DrawView(this));
+    }
+
+    class DrawView extends View {
+
+        Paint p;
+        Rect rect;
+        Path path;
+
+        public DrawView(Context context) {
+            super(context);
+            p = new Paint();
+            rect = new Rect();
+            path = new Path();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            // заливка канвы цветом
+            canvas.drawRGB( 51, 153, 255);
+
+
+            p.setColor(Color.YELLOW);
+            canvas.drawCircle(canvas.getWidth()/4, (int)(canvas.getHeight()*0.8)-(canvas.getWidth()/6),
+                    canvas.getWidth()/6, p);
+
+            p.setColor(Color.BLUE);
+            canvas.drawRect(0, (int)(canvas.getHeight()*0.8),
+                    canvas.getWidth(),canvas.getHeight(), p);
+
+///////////////////////////////////////начаолтние координаты///////////////////////////////////////////////////////////////////
+            int startX =(canvas.getWidth()/4) + (canvas.getWidth()/6) - 15;
+            int startY =(int)(canvas.getHeight()*0.8)-(canvas.getWidth()/6) + 50;
+/////////////////////////////////////////парус/////////////////////////////////////////////////////////////////
+            p.setColor(Color.WHITE);
+            p.setStyle(Paint.Style.FILL);
+            path.reset();
+            path.moveTo(startX + 280, startY + 80);
+            path.lineTo(startX + 280, startY - 160);
+            path.lineTo(startX + 420, startY - 40);
+            path.lineTo(startX + 280, startY + 80);
+            canvas.drawPath(path, p);
+//////////////////////////////////////онтур паруса////////////////////////////////////////////////////////////////////
+            p.setColor(Color.GRAY);
+            p.setStrokeWidth(5);
+            p.setStyle(Paint.Style.STROKE);
+            path.reset();
+            path.moveTo(startX + 280, startY + 80);
+            path.lineTo(startX + 280, startY - 160);
+            path.lineTo(startX + 420, startY - 40);
+            path.lineTo(startX + 280, startY + 80);
+            canvas.drawPath(path, p);
+//////////////////////////////////////кораблик////////////////////////////////////////////////////////////////////
+            p.setColor(Color.rgb(102,51,0));
+            p.setStyle(Paint.Style.FILL);
+
+            path.reset();
+            path.moveTo(startX,startY);
+            path.lineTo(startX + 200, startY);
+            path.lineTo(startX + 200, startY+80);
+            path.lineTo(startX + 400, startY+80);
+            path.lineTo(startX + 400, startY+50);
+            path.lineTo(startX + 600, startY+50);
+            path.lineTo(startX + 500, (int)(canvas.getHeight()*0.8));
+            path.lineTo(startX + 100, (int)(canvas.getHeight()*0.8));
+            path.lineTo(startX, startY);
+            canvas.drawPath(path, p);
+
+        }
+    }
+
+}

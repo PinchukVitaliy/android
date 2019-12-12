@@ -1,0 +1,179 @@
+<card one>
+<xml>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:context=".MainActivity">
+
+
+        <ImageButton
+            android:id="@+id/bigPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:padding="0dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/card" />
+
+
+        <LinearLayout
+            android:id="@+id/context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/bigPicture"
+            android:layout_toRightOf="@+id/bigPicture"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:paddingBottom="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="left"
+                    android:text="Androidinsider.ru"
+                    android:textSize="8pt" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/love" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Nexus 5 обновили до Android Nougat"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Ежегодные релизы финальных сорок программных апдейтеров вроде Lollipop, Marshmallow  или Nougat - вот настоящий пир во вре..."
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="25.06.2016, 12:00"
+                android:textColor="#808080" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="ПОДРОБНЕЙ"
+                android:paddingTop="15dp"
+                android:textColor="#ff0000"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
+</xml>
+
+
+<card two>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:id="@+id/one"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="18dp"
+            android:text="RevolverLab"/>
+
+        <TextView
+            android:id="@+id/two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/one"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:text="Cамый полный гид по GIF-формату"/>
+
+        <TextView
+            android:id="@+id/three"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/two"
+            android:textColor="#000000"
+            android:text="Формат изображений GIF был придуман для экономии трафика в эру медленного интернета десятилетия назад. Сейчас, когда экономить уже не нужно даже на мобильном интернете, гифки служат для других целей — они дарят нам радость. Как максимально гармонично вписать их в свою жизнь и стать настоящим GIF-хантером."/>
+
+        <TextView
+            android:id="@+id/data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/three"
+            android:layout_marginTop="30dp"
+            android:text="20.05.2016"/>
+
+        <TextView
+            android:id="@+id/longs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/three"
+            android:layout_marginTop="30dp"
+            android:layout_alignParentRight="true"
+            android:text="00:55:02"/>
+
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/data"
+        android:textColor="#75bbfd"
+        android:layout_marginLeft="50dp"
+        android:textStyle="bold"
+        android:text="&#9658; ПРОСЛУШАТЬ"/>
+
+
+        <TextView
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/longs"
+            android:textColor="#75bbfd"
+            android:layout_marginRight="50dp"
+            android:textStyle="bold"
+            android:text="Скачать"/>
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
+<xml>
+
+</xml>

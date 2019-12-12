@@ -1,0 +1,210 @@
+<java>
+
+import android.annotation.SuppressLint;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.TextView;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+
+
+
+public class MainActivity extends AppCompatActivity {
+
+    String INFO = "INFO_";
+    boolean isRunning;
+    TextView textView, NW, Birth, Adroid, marqueeText;
+    long t = -10800000;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("run", isRunning);
+        Log.i(INFO, "onSaveState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        isRunning = savedState.getBoolean("run");
+        Log.i(INFO, "onRestoreState");
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        textView = (TextView) findViewById(R.id.textViewTime);
+
+        NW = (TextView) findViewById(R.id.newYear);
+        Birth = (TextView) findViewById(R.id.happy);
+        Adroid = (TextView) findViewById(R.id.android);
+        marqueeText = (TextView) findViewById(R.id.MarqueeText);
+
+        runTimer();
+
+        // Calendar calendar = Calendar.getInstance();
+        //t = calendar.getTimeInMillis();
+//        calendar.setTimeInMillis(t-300000);
+//        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.UK).format(calendar.getTime());
+//        textView.setText(time);
+    }
+
+    public void onStart(View view) {
+        isRunning = true;
+        marqueeText.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        marqueeText.setSingleLine(true);
+       // marqueeText.setMarqueeRepeatLimit(-1);
+        marqueeText.setSelected(true);
+        marqueeText.setPadding(25,0,25,0);
+    }
+
+    public void onStop(View view) {
+        isRunning = false;
+    }
+
+    public void runTimer() {
+
+        final Handler h = new Handler();
+        h.post(new Runnable() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void run() {
+                if (isRunning) {
+                    //real time
+                    Calendar nowCalendar = new GregorianCalendar();
+                    @SuppressLint
+                            ("SimpleDateFormat") String date = new SimpleDateFormat("HH:mm:ss:SSS").format(nowCalendar.getTime());
+                    getSupportActionBar().setTitle(date);
+                    // Work of the program
+                    Calendar workCalendar = new GregorianCalendar();
+                    t += 100;
+                    workCalendar.setTimeInMillis(t);
+                    @SuppressLint
+                            ("SimpleDateFormat") String time = new SimpleDateFormat("HH:mm:ss").format(workCalendar.getTime());
+                    textView.setText("Work of the program:" + time);
+                    //Before the New Year
+                    NW.setText("Before the New Year:\n" + beforeTime(2018, 12, 31, 23, 59, 59,  nowCalendar));
+                    //Before the Happy Birthday
+                    Birth.setText("Before the Happy Birthday:\n" + beforeTime(2018, 11, 11, 13, 0, 0,  nowCalendar));
+                    //To the end of the course Android
+                    Adroid.setText("To the end of the course Android:\n" + beforeTime(2018, 9, 30, 20, 50, 0,  nowCalendar));
+                }
+                h.postDelayed(this, 100);
+            }
+        });
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public String beforeTime(int y, int m,int d, int h, int min, int s, Calendar c) {
+        String str="";
+        int year = Integer.parseInt(new SimpleDateFormat("yyyy").format(c.getTime()));
+        int month = Integer.parseInt(new SimpleDateFormat("MM").format(c.getTime()));
+        int day = Integer.parseInt(new SimpleDateFormat("dd").format(c.getTime()));
+        int hour = Integer.parseInt(new SimpleDateFormat("HH").format(c.getTime()));
+        int minut = Integer.parseInt(new SimpleDateFormat("mm").format(c.getTime()));
+        int second = Integer.parseInt(new SimpleDateFormat("ss").format(c.getTime()));
+        Calendar endCalendar = new GregorianCalendar();
+        endCalendar.set(y-year,m-month,d-day,h-hour,min-minut,s-second);
+
+        str = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endCalendar.getTime());
+        return str;
+    }
+}
+
+</java>
+
+
+
+
+
+
+
+
+
+
+
+<xml>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="20dp">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Time"
+        android:id="@+id/start"
+        android:textAllCaps="false"
+        android:onClick="onStart"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop!"
+        android:id="@+id/stop"
+        android:layout_marginTop="10dp"
+        android:onClick="onStop"
+        android:layout_below="@+id/start"
+        android:textAllCaps="false"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/textViewTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stop"
+        android:layout_marginTop="10dp"
+        android:text="Work Time"/>
+    <TextView
+        android:id="@+id/newYear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewTime"
+        android:layout_marginTop="10dp"
+        android:text="New Year"/>
+    <TextView
+        android:id="@+id/happy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newYear"
+        android:layout_marginTop="10dp"
+        android:text="Happy Birthday"/>
+    <TextView
+        android:id="@+id/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/happy"
+        android:layout_marginTop="10dp"
+        android:text="End Course Android"/>
+
+    <TextView
+        android:text="START | lunch 20.00 | Dinner 60.00 | Travel 60.00 | Doctor 5000.00 | lunch 20.00 | Dinner 60.00 | Travel 60.00 | Doctor 5000.00 | END"
+        android:id="@+id/MarqueeText"
+        android:layout_below="@+id/android"
+        android:layout_marginTop="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+        <!--android:singleLine="true"-->
+        <!--android:ellipsize="marquee"-->
+        <!--android:marqueeRepeatLimit="marquee_forever"-->
+        <!--android:scrollHorizontally="true"-->
+        <!--android:paddingLeft="25dip"-->
+        <!--android:paddingRight="25dip"-->
+        <!--android:focusable="true"-->
+        <!--android:focusableInTouchMode="true"-->
+        <!--android:freezesText="true"-->
+
+</RelativeLayout>
+</xml>

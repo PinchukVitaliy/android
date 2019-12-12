@@ -1,0 +1,308 @@
+////////////////////////////////////////mainactivity xml////////////////////////////////
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="#00AA00"
+        android:onClick="send"
+        android:text="Отправить сообщение!"
+        android:textAllCaps="false" />
+
+</LinearLayout>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:gravity="center"-->
+    <!--android:orientation="vertical">-->
+
+    <!--<Button-->
+        <!--android:id="@+id/start"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:background="#00AA00"-->
+        <!--android:onClick="start"-->
+        <!--android:text="Запустить сервис!"-->
+        <!--android:textAllCaps="false" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/stop"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:background="#AA0000"-->
+        <!--android:onClick="stop"-->
+        <!--android:text="Остановить сервис!"-->
+        <!--android:textAllCaps="false" />-->
+<!--</LinearLayout>-->
+
+
+////////////////////////////////////////mainactivity////////////////////////////////
+
+
+
+package com.example.pink_ft12.gestures;
+
+
+//import android.content.Intent;
+//import android.os.Bundle;
+//import android.support.v7.app.AppCompatActivity;
+//import android.view.View;
+//
+//public class MainActivity extends AppCompatActivity {
+//
+//    public String MY_MESSAGE = "com.alex.sender.id1";
+//    public String text = "Hello, world!";
+//
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//    }
+//
+//    public void send(View v) {
+//        Intent intent = new Intent();
+//        intent.setAction(MY_MESSAGE);
+//        intent.putExtra("someData", text);
+//        // начиная с Android 3.0, в целях безопасности сообщения игнорируются
+//        // остановленными приложениями. Поэтому следует добавлять дополнительный флаг,
+//        // разрешающий запуск активности
+//        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+//        sendBroadcast(intent);
+//    }
+//}
+import android.app.ActivityManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
+import android.view.View;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
+
+        Intent startIntent = new Intent(this, MyService.class);
+        if (!isMyServiceRunning(MyService.class)) {
+            startIntent.setAction("start");
+        }else{
+            startIntent.setAction("stop");
+        }
+        startService(startIntent);
+        finish();
+
+    }
+
+
+    public void start(View v) {
+        if (isMyServiceRunning(MyService.class)) return;
+        Intent startIntent = new Intent(this, MyService.class);
+        startIntent.setAction("start");
+        startService(startIntent);
+    }
+
+    public void stop(View v) {
+        if (!isMyServiceRunning(MyService.class)) return;
+        Intent stopIntent = new Intent(this, MyService.class);
+        stopIntent.setAction("stop");
+        startService(stopIntent);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+////////////////////////////////////////manifest////////////////////////////////
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.pink_ft12.gestures">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <uses-feature android:name="android.hardware.sensor.light" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/NoDisplay">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name=".MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name ="com.alex.sender.id1"></action>
+            </intent-filter>
+
+        </receiver>
+    </application>
+
+</manifest>
+
+
+
+////////////////////////////////////////string////////////////////////////////
+
+
+
+
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="NoDisplay" parent="@android:style/Theme.NoDisplay"/>
+
+</resources>
+
+
+
+
+//////////////////////////////MyService//////////////////////////////
+package com.example.pink_ft12.gestures;
+
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.support.v7.app.NotificationCompat;
+import android.widget.Toast;
+
+public class MyService extends Service {
+
+    private Handler h;
+    private Runnable r;
+    Vibrator v;
+    int counter = 0;
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private Notification updateNotification() {
+        counter++;
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class), 0);
+
+        String info = counter + "";
+        return new NotificationCompat.Builder(this)
+                .setContentTitle(info)
+                .setTicker(info)
+                .setContentText(info)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(
+                        Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),
+                                R.mipmap.ic_launcher), 128, 128, false))
+                .setContentIntent(pendingIntent)
+                .setOngoing(true).build();
+    }
+
+
+    @Override
+    public int onStartCommand(final Intent intent, int flags, int startId) {
+
+        if (intent.getAction().contains("start") ) {
+            Toast.makeText(this, "start", Toast.LENGTH_SHORT).show();
+            h = new Handler();
+            r = new Runnable() {
+                @Override
+                public void run() {
+                    startForeground(101, updateNotification());
+                    h.postDelayed(this, 150);
+                    v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(500);
+                }
+            };
+
+            h.post(r);
+        } else {
+            Toast.makeText(this, "stop", Toast.LENGTH_SHORT).show();
+            v.cancel();
+            h.removeCallbacks(r);
+            stopForeground(true);
+            stopSelf();
+        }
+        return Service.START_STICKY;
+    }
+}
+
+/////////////////////////Resiver///////////////////////
+package com.example.pink_ft12.gestures;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+public class MyReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Toast.makeText(context, "Обнаружено сообщение: "+
+                intent.getStringExtra("someData"), Toast.LENGTH_SHORT).show();
+    }
+
+}

@@ -1,0 +1,226 @@
+<java>
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.CountDownTimer;
+import android.os.Environment;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+
+public class SecondActivity extends AppCompatActivity {
+
+    int nn;
+    MediaPlayer mPlayer;
+    Button startButton, pauseButton, stopButton;
+    TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+
+        mPlayer = MediaPlayer.create(this, R.raw.moby);
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                stopPlay();
+            }
+        });
+        startButton = (Button) findViewById(R.id.start);
+        pauseButton = (Button) findViewById(R.id.pause);
+        stopButton = (Button) findViewById(R.id.stop);
+
+
+        textView = (TextView) this.findViewById(R.id.textViewInfo);
+
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
+
+        nn = getIntent().getIntExtra("sec", nn);
+        getSupportActionBar().setTitle(nn + "");
+
+    }
+
+
+    public void back(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("main", (++nn));
+        startActivity(intent);
+        finish();
+    }
+
+    private void stopPlay() {
+        mPlayer.stop();
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        try {
+            mPlayer.prepare();
+            mPlayer.seekTo(0);
+            startButton.setEnabled(true);
+        } catch (Throwable t) {
+            Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void play(View view) {
+        mPlayer.start();
+        startButton.setEnabled(false);
+        pauseButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        openText();
+    }
+
+    public void pause(View view) {
+
+        mPlayer.pause();
+        startButton.setEnabled(true);
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(true);
+    }
+
+    public void stop(View view) {
+        stopPlay();
+    }
+
+
+    //считать файл посимвольно
+    private String openFile() {
+        InputStream inputStream = getResources().openRawResource(
+                R.raw.mobi);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        String str = "";
+        int i;
+        try {
+            i = inputStream.read();
+            while (i != -1) {
+                // Thread.sleep(100);
+                byteArrayOutputStream.write(i);
+                i = inputStream.read();
+                //textView.setText(byteArrayOutputStream.toString());
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //textView.setText(byteArrayOutputStream.toString());
+        return byteArrayOutputStream.toString();
+    }
+
+
+    public void openText() {
+        try {
+            InputStream inputStream = getResources().openRawResource(
+                    R.raw.mobi);
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    Toast.makeText(this, receiveString, Toast.LENGTH_LONG).show();
+                }
+                inputStream.close();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+    }
+
+
+}
+</java>
+
+
+
+<xml>
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondActivity">
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="80dp"
+        android:onClick="back"
+        android:text="Back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textViewInfo"
+        android:layout_width="match_parent"
+        android:layout_height="335dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+    <LinearLayout
+
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="play"
+            android:text="Play" />
+
+        <Button
+            android:id="@+id/pause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="pause"
+            android:text="Pause" />
+
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="stop"
+            android:text="Stop" />
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>
+</xml>

@@ -1,0 +1,154 @@
+//////////////////////////////mainactivity xml/////////////////////////
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#c4c0c0"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:onClick="handler"
+        android:text="clear"/>
+
+    <Button
+        android:id="@+id/second"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:onClick="second"
+        android:text="Second"/>
+
+        <TextView
+            android:id="@+id/enter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:textSize="35dp"
+            android:text="0"/>
+
+</LinearLayout>
+
+//////////////////////////////mainactivity java/////////////////////////
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    TextView enter;
+    SharedPreferences pref;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        enter= findViewById(R.id.enter);
+        pref = getPreferences(MODE_PRIVATE);
+
+        if(MyApplication.getAppContext() == null){
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putInt("enter", pref.getInt("enter",-1)+1);
+            ed.apply();
+            enter.setText(pref.getInt("enter", -1)+"");
+        }
+        else{
+            SharedPreferences.Editor ed = pref.edit();
+            enter.setText(pref.getInt("enter", -1)+"");
+        }
+    }
+
+    public void handler(View v) {
+        pref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putInt("enter", 0);
+        ed.apply();
+        enter.setText(pref.getInt("enter", -1)+"");
+    }
+
+
+    public void second(View view) {
+        Intent intent = new Intent(this, SecondActivity.class);
+        startActivity(intent);
+    }
+}
+
+///////////////////////////secondactivity xml//////////////////
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#c4c0c0"
+    android:orientation="vertical"
+    tools:context=".SecondActivity">
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:onClick="back"
+        android:text="back"/>
+
+</LinearLayout>
+
+///////////////////////////secondactivity java////////
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+
+public class SecondActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+    }
+
+    public void back(View view) {
+        this.finish();
+    }
+}
+
+//////////////MyApplication java////////////////
+import android.app.Application;
+import android.content.Context;
+import android.support.annotation.Nullable;
+
+
+public class MyApplication extends Application {
+
+    private static MyApplication sInstance = null;
+
+    @Nullable
+    public static Context getAppContext() {
+        if (null == sInstance) {
+            sInstance = new MyApplication();
+            return null;
+        }
+        return sInstance;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sInstance = this;
+    }
+}

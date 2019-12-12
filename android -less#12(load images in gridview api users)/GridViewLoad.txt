@@ -1,0 +1,185 @@
+////////////ActivityMain  java ////////////////////
+
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.GridView;
+import android.widget.ProgressBar;
+
+import java.util.ArrayList;
+
+
+public class GridViewActivity extends AppCompatActivity {
+
+    private GridView mGridView;
+    private ProgressBar mProgressBar;
+    private CustomAdapterGridView mGridAdapter;
+    private ArrayList<GridItem> mGridData;
+    private GridItem gridItem;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_grid_view);
+        getSupportActionBar().setTitle("activity_grid_view");
+
+        mGridView = (GridView) findViewById(R.id.gridView);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        mGridData = new ArrayList<>();
+
+        //Initialize with empty data
+        mGridAdapter = new CustomAdapterGridView(this, R.layout.grid_view, mGridData);
+        mGridView.setAdapter(mGridAdapter);
+
+        prepareMovieData();
+    }
+
+    private void prepareMovieData() {
+
+        for (int i = 10; i < 50; i++) {
+            gridItem = new GridItem("https://randomuser.me/api/portraits/women/" + i + ".jpg");
+            mGridData.add(gridItem);
+        }
+
+        mGridAdapter.notifyDataSetChanged();
+    }
+
+}
+
+
+
+
+
+
+
+////////////ActivityMain  xml////////////////////
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width ="match_parent"
+    android:layout_height ="match_parent"
+    android:background="#f0f0f0">
+
+    <GridView
+        android:id = "@+id/gridView"
+        android:layout_width = "fill_parent"
+        android:layout_height = "wrap_content"
+        android:layout_margin = "5dp"
+        android:columnWidth = "100dp"
+        android:drawSelectorOnTop = "true"
+        android:gravity = "center"
+        android:numColumns = "auto_fit"
+        android:stretchMode = "columnWidth"
+        android:verticalSpacing = "5dp"
+        android:focusable = "true"
+        android:clickable = "true" />
+
+
+
+    <ProgressBar
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/progressBar"
+        android:layout_centerInParent = "true"
+        android:visibility = "gone"/>
+</RelativeLayout>
+
+
+//////////////////////CustomAdapter java ///////////////////
+
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+public class CustomAdapterGridView  extends ArrayAdapter<GridItem> {
+
+    private Context mContext;
+    private int layoutResourceId;
+    private ArrayList<GridItem> mGridData ;
+
+    public CustomAdapterGridView(Context mContext, int layoutResourceId, ArrayList<GridItem> mGridData) {
+        super(mContext, layoutResourceId, mGridData);
+        this.layoutResourceId = layoutResourceId;
+        this.mContext = mContext;
+        this.mGridData = mGridData;
+
+    }
+
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        ViewHolder holder;
+
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            row = inflater.inflate(layoutResourceId, parent, false);
+            holder = new ViewHolder();
+            //holder.titleTextView = (TextView) row.findViewById(R.id.grid_item_title);
+            holder.imageView = (ImageView) row.findViewById(R.id.grid_item_image);
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolder) row.getTag();
+        }
+
+        GridItem item = mGridData.get(position);
+        //holder.titleTextView.setText(Html.fromHtml(item.getTitle()));
+
+        Picasso.get().
+                load(item.getImId()).
+                placeholder(R.drawable.loading).
+                error( R.drawable.error).
+                into(holder.imageView);
+        return row;
+    }
+
+    static class ViewHolder {
+        //TextView titleTextView;
+        ImageView imageView;
+    }
+}
+
+////////////////// great_view xml////////////////////////
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+    android:layout_width = "wrap_content"
+    android:layout_height = "wrap_content"
+    android:layout_marginTop = "5dp"
+    android:orientation = "vertical"
+    android:padding = "5dp" >
+
+
+<ImageView
+    android:id = "@+id/grid_item_image"
+    android:layout_width = "100dp"
+    android:layout_height = "100dp"
+    android:scaleType = "centerCrop"/>
+
+
+</LinearLayout>
+
+
+
+//////////////////AndroidManifest java ///////////////////
+ <uses-permission android:name = "android.permission.INTERNET"/>
+
+
+//////////////buid.gradle Module.app /////////////////
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+}

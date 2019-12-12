@@ -1,0 +1,308 @@
+------------------BACKGRAUND----------------------------
+<java>
+
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
+import java.util.Random;
+
+
+
+public class Second_Activity extends AppCompatActivity {
+
+    String INFO = "INFO_";
+    boolean isRunning;
+    RelativeLayout relativeLayout;
+    int startColor, endColor;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("run", isRunning);
+        Log.i(INFO, "onSaveState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        isRunning = savedState.getBoolean("run");
+        Log.i(INFO, "onRestoreState");
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second_);
+
+        relativeLayout = findViewById(R.id.relativ);
+        getSupportActionBar().setTitle("Backgraund");
+        runTimer();
+    }
+
+
+    public void onStart(View view) {
+        isRunning = true;
+        startColor = getRandomColor();
+        endColor = getRandomColor();
+        backgraund();
+    }
+
+    public void onStop(View view) {
+        isRunning = false;
+    }
+
+    public void runTimer() {
+
+        final Handler h = new Handler();
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    //real time
+                    backgraund();
+                }
+                h.postDelayed(this, 4000);
+            }
+        });
+    }
+
+    public void backgraund(){
+        ObjectAnimator objectAnimator = ObjectAnimator.ofInt(relativeLayout, "backgroundColor", startColor, endColor).setDuration(2000);
+        objectAnimator.setEvaluator(new ArgbEvaluator());
+        objectAnimator.start();
+        startColor=endColor;
+        endColor = getRandomColor();
+    }
+    public int getRandomColor(){
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+    }
+
+
+    public void Click(View view) {
+        Intent intent = new Intent(this, Three_Activity.class);
+        startActivity(intent);
+    }
+}
+</java>
+
+
+<xml>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativ"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Second_Activity">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Time"
+        android:id="@+id/start"
+        android:textAllCaps="false"
+        android:onClick="onStart"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop!"
+        android:id="@+id/stop"
+        android:layout_marginTop="10dp"
+        android:onClick="onStop"
+        android:layout_below="@+id/start"
+        android:textAllCaps="false"
+        android:layout_centerHorizontal="true" />
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click"
+        android:onClick="Click"
+        android:id="@+id/next"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/stop" />
+</RelativeLayout>
+</xml>
+
+
+
+------------------CLICKER----------------------------
+
+<java>
+
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+
+public class Three_Activity extends AppCompatActivity {
+
+    String INFO = "INFO_";
+    boolean isRunning;
+    int i = 0;
+    int time = 0;
+    int st = 0;
+    Button button;
+    List<Integer> records;
+    String[] starting = {"3", "2", "1", "GO!!!"};
+    TextView textView;
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("run", isRunning);
+        Log.i(INFO, "onSaveState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        isRunning = savedState.getBoolean("run");
+        Log.i(INFO, "onRestoreState");
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_three_);
+
+        button = findViewById(R.id.click);
+        button.setEnabled(false);
+        textView = findViewById(R.id.starting);
+        records = new ArrayList<>();
+        records.add(0);
+        getSupportActionBar().setTitle("Countdown");
+
+        runTimer();
+
+    }
+
+    public void onStart(View view) {
+        isRunning = true;
+    }
+
+    public void onStop(View view) {
+        isRunning = false;
+    }
+
+    public void runTimer() {
+
+        final Handler h = new Handler();
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    if (st < 4) {
+                        textView.setText(starting[st++]);
+                    } else {
+                        button.setEnabled(true);
+                        ++time;
+                        getSupportActionBar().setTitle(time + "");
+                        if (time == 10) {
+                            records.add(i);
+                            button.setEnabled(false);
+                            isRunning = false;
+                            Toast.makeText(Three_Activity.this,
+                                    "Clicks: " + i + "\nRecord: " + rec(records),
+                                    Toast.LENGTH_SHORT).show();
+                            getSupportActionBar().setTitle("Countdown");
+                            i = 0;
+                            time = 0;
+                            st = 0;
+                        }
+                    }
+                }
+                h.postDelayed(this, 1000);
+            }
+        });
+    }
+
+
+    public Integer rec(List<Integer> mass) {
+        Integer i = Collections.max(mass);
+        return i;
+    }
+
+    public void Click(View view) {
+        ++i;
+    }
+}
+
+</java>
+
+
+<xml>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Three_Activity">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Time"
+        android:id="@+id/start"
+        android:textAllCaps="false"
+        android:onClick="onStart"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop!"
+        android:id="@+id/stop"
+        android:layout_marginTop="10dp"
+        android:onClick="onStop"
+        android:layout_below="@+id/start"
+        android:textAllCaps="false"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/starting"
+        android:text="Starting!"
+        android:padding="30dp"
+        android:layout_margin="10dp"
+        android:textSize="20pt"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/stop"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click me)"
+        android:onClick="Click"
+        android:id="@+id/click"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>
+</xml>

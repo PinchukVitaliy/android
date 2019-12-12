@@ -1,0 +1,211 @@
+<xml one>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".MainActivity"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/red"
+        android:text="RED"
+        android:padding="10dp"
+        android:background="@color/red"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+
+        android:onClick="next"/>
+
+    <Button
+        android:id="@+id/orange"
+        android:text="ORANGE"
+        android:padding="10dp"
+        android:background="@color/orange"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/red"
+        android:layout_toEndOf="@+id/red"
+        android:layout_toRightOf="@+id/red" />
+
+    <Button
+        android:id="@+id/yellow"
+        android:text="YELLOW"
+        android:background="@color/yellow"
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/orange"
+
+        android:layout_toEndOf="@+id/orange"
+        android:layout_toRightOf="@+id/orange" />
+
+    <Button
+        android:id="@+id/green"
+        android:text="GREEN"
+        android:background="@color/green"
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/yellow"
+
+        android:layout_toEndOf="@+id/yellow"
+        android:layout_toRightOf="@+id/yellow" />
+
+    <Button
+        android:id="@+id/blue"
+        android:text="BLUE"
+        android:background="@color/blue"
+        android:textColor="@color/white"
+        android:padding="10dp"
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/green"
+
+        android:layout_toStartOf="@+id/green"
+        android:layout_toLeftOf="@+id/green"/>
+
+    <Button
+        android:id="@+id/indigo"
+        android:text="INDIGO"
+        android:background="@color/indigo"
+        android:textColor="@color/white"
+        android:padding="10dp"
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/blue"
+
+        android:layout_toStartOf="@+id/blue"
+        android:layout_toLeftOf="@+id/blue"/>
+
+    <Button
+        android:id="@+id/violet"
+        android:text="VIOLET"
+        android:background="@color/violet"
+        android:textColor="@color/white"
+        android:padding="10dp"
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/indigo"
+
+        android:layout_toStartOf="@+id/indigo"
+        android:layout_toLeftOf="@+id/indigo"/>
+
+</RelativeLayout>
+</xml>
+
+
+<xml two>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Second_Activity">
+
+    <Button
+        android:id="@+id/topLeft"
+        android:background="@color/darkturquoise"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Top \nLeft"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"/>
+
+    <Button
+        android:id="@+id/topRight"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:background="@color/darkturquoise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Top \nRight"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"/>
+
+    <Button
+        android:id="@+id/topMiddle"
+        android:background="@color/orange"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Top \nMiddle"
+
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/center"
+        android:background="@color/darkturquoise"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Center"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/left"
+        android:background="@color/orange"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Left"
+
+        android:layout_below="@+id/center"
+        android:layout_alignParentLeft="true"/>
+
+    <Button
+        android:background="@color/orange"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Right"
+
+        android:layout_below="@+id/center"
+        android:layout_alignParentRight="true"/>
+
+
+    <Button
+        android:id="@+id/bottom"
+        android:textColor="@color/white"
+        android:padding="10pt"
+        android:background="@color/darkturquoise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buttom of Screen"
+
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>
+</xml>

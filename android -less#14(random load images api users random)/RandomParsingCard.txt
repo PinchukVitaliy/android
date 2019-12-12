@@ -1,0 +1,292 @@
+///////////mainActivity java////////////////
+package com.example.cardviewlistactivity;
+
+
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecyclerView_Activity extends AppCompatActivity{
+    private List<Movie> list = new ArrayList<>();
+    private MoviesAdapter a;
+    private Movie movie;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recycler_view_);
+        getSupportActionBar().setTitle(" Recycler View");
+
+
+        RecyclerView rv = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+        a = new MoviesAdapter(list);
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getApplicationContext());
+        rv.setLayoutManager(lm);
+        rv.setItemAnimator(new DefaultItemAnimator());
+        rv.setAdapter(a);
+
+        //prepareMovieData();
+        new ParseTask().execute();
+    }
+
+    private void prepareMovieData() {
+
+        movie = new Movie("Joann Clark",  "https://randomuser.me/api/portraits/women/79.jpg");
+        list.add(movie);
+
+        movie = new Movie("Harvey Mendoza",  "https://randomuser.me/api/portraits/men/31.jpg");
+        list.add(movie);
+
+        movie = new Movie("Ethan Campbell",  "https://randomuser.me/api/portraits/men/72.jpg");
+        list.add(movie);
+
+        movie = new Movie("Marion Sims",  "https://randomuser.me/api/portraits/men/76.jpg");
+        list.add(movie);
+
+        a.notifyDataSetChanged();
+    }
+
+
+
+    private class ParseTask extends AsyncTask<Void, Void, String> {
+
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        String resultJson = "";
+
+        @Override
+        protected String doInBackground(Void... params) {
+            // получаем данные с внешнего ресурса
+            try {
+                URL url = new URL("https://randomuser.me/api/");
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+
+                resultJson = buffer.toString();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return resultJson;
+        }
+
+        @Override
+        protected void onPostExecute(String strJson) {
+            super.onPostExecute(strJson);
+
+            JSONObject dataJsonObj = null;
+
+            try {
+                dataJsonObj = new JSONObject(strJson);
+                JSONArray results = dataJsonObj.getJSONArray("results");
+
+                for (int i = 0; i < results.length(); i++) {
+                    JSONObject man = results.getJSONObject(i);
+
+                    JSONObject picture = man.getJSONObject("picture");
+                    JSONObject login = man.getJSONObject("name");
+
+                    String img = picture.getString("large");
+                    String name = login.getString("first")+" "+login.getString("last");
+
+                    movie = new Movie(name,  img);
+                    list.add(movie);
+
+                    a.notifyDataSetChanged();
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+///////mainActivity xml ///////////////////
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
+
+</RelativeLayout>
+
+
+//////////////////java class items//////////////////
+class Movie {
+
+    private String autor;
+    private String imId;
+
+    Movie(String autor, String imId) {
+        setAutor(autor);
+        setImId(imId);
+    }
+
+    String getAutor() {
+        return autor;
+    }
+
+    void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    String getImId() {
+        return imId;
+    }
+
+    void setImId(String imId) {
+        this.imId = imId;
+    }
+
+}
+
+////////////card xml ////////////////////
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="5dp">
+
+
+    <LinearLayout
+        android:id="@+id/card_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/rain" />
+
+        <TextView
+            android:id="@+id/autor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Autor name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
+
+
+//////////////adapter java class//////
+package com.example.cardviewlistactivity;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
+class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
+
+    private List<Movie> moviesList;
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView autor;
+        private ImageView image;
+
+
+        MyViewHolder(View view) {
+            super(view);
+            autor = (TextView) view.findViewById(R.id.autor);
+            image = (ImageView) view.findViewById(R.id.image);
+        }
+    }
+
+    MoviesAdapter(List<Movie> moviesList) {
+        this.moviesList = moviesList;
+    }
+
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.recycler_item, parent, false);
+
+        return new MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        Movie movie = moviesList.get(position);
+        holder.autor.setText(movie.getAutor());
+        Picasso.get().
+                load(movie.getImId()).
+                placeholder(R.drawable.ic_archive_black_24dp).
+                error( R.drawable.ic_close_black_24dp).
+                into(holder.image);
+    }
+
+    @Override
+    public int getItemCount() {
+        return moviesList.size();
+    }
+}
+
+
+
+//////////////buid.gradle Module.app /////////////////
+    implementation 'com.squareup.picasso:picasso:2.71828'
+	implementation 'org.jsoup:jsoup:1.11.3'
